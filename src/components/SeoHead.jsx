@@ -18,19 +18,19 @@ export default function SeoHead() {
     if (!settings) return;
 
     // Update page title (with no m-dashes, using clean normal hyphens)
-    const rawTitle = settings.site_name || settings.hero_title || 'HIx playz';
-    const heroTitle = rawTitle.toLowerCase().includes('hix') ? rawTitle : `${rawTitle} - HIx playz`;
+    const rawTitle = settings.site_name || settings.hero_title || 'HIXX PLAYZ';
+    const heroTitle = rawTitle.toUpperCase().includes('HIXX') ? rawTitle : `${rawTitle} - HIXX PLAYZ`;
     const finalTitle = `${heroTitle} - Immortal Demi Gods - Demigods Clan`;
     document.title = finalTitle;
 
     // Update meta description (fully optimized for SEO keywords, normal hyphens only)
-    const baseDesc = settings.hero_description || 'Official portfolio of HIx playz, immortal from demi gods. Explore uploads, gaming packages, and media from demigods clan.';
+    const baseDesc = settings.hero_description || 'Official portfolio of HIXX PLAYZ, immortal from demi gods. Explore uploads, gaming packages, and media from demigods clan.';
     const cleanDesc = baseDesc.replace(/—|–/g, ' - '); // strip any stray m-dashes/en-dashes
     const seoDesc = `${cleanDesc} | Join the world of immortal demi gods and explore exclusive gaming packages.`.slice(0, 160);
     updateMeta('description', seoDesc);
 
     // Update keywords dynamically
-    const keywords = 'HIx playz, hixx playz, immortal from demi gods, immortal demi gods, demigods, demigods clan, demigods gaming, gaming portfolio, immortal playz, gaming downloads';
+    const keywords = 'HIXX PLAYZ, hixx playz, immortal from demi gods, immortal demi gods, demigods, demigods clan, demigods gaming, gaming portfolio, immortal playz, gaming downloads';
     updateMeta('keywords', keywords);
 
     // Update OG tags (using clean titles and descriptions with standard hyphens)
@@ -71,7 +71,7 @@ export default function SeoHead() {
       '@context': 'https://schema.org',
       '@type': 'Person',
       name: heroTitle,
-      alternateName: ['HIx playz', 'Immortal', 'Immortal Demi Gods', 'Demigods'],
+      alternateName: ['HIXX PLAYZ', 'Immortal', 'Immortal Demi Gods', 'Demigods'],
       description: seoDesc,
       image: logoUrl || '/og-image.png',
       url: 'https://alwaysharsh.lol',
