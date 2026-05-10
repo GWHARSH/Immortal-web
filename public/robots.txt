@@ -1,0 +1,18 @@
+User-agent: *
+Disallow: /admin
+Disallow: /login
+
+# Allow search engines to see the main content
+Allow: /
+Allow: /uploads
+Allow: /packages
+
+# Block known scrapers and download bots
+User-agent: HTTrack
+Disallow: /
+
+User-agent: wget
+Disallow: /
+
+User-agent: curl
+Disallow: /

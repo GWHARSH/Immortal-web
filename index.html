@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="HIXX PLAYZ — The one and only. Explore the world of a legend." />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourdomain.com/" />
+    <meta property="og:title" content="HIXX PLAYZ | Official Portfolio" />
+    <meta property="og:description" content="The one and only HIXX PLAYZ. Explore the world of a legend." />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://yourdomain.com/" />
+    <meta property="twitter:title" content="HIXX PLAYZ | Official Portfolio" />
+    <meta property="twitter:description" content="The one and only HIXX PLAYZ. Explore the world of a legend." />
+    <meta property="twitter:image" content="/og-image.png" />
+
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <title>HIXX PLAYZ</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      document.addEventListener('keydown', (e) => {
+        if (
+          e.keyCode === 123 || 
+          (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || 
+          (e.ctrlKey && e.keyCode === 85)
+        ) {
+          e.preventDefault();
+        }
+      });
+
+      console.log(
+        '%c🛡️ YAMATO SECURITY PROTOCOL',
+        'color:#f472b6;font-size:22px;font-weight:900;'
+      );
+      console.log(
+        '%c🔒 Elements • Console • Sources • Application — ALL MONITORED\nDeveloped by YAMATO',
+        'color:#6a6a7a;font-size:13px;line-height:1.8;'
+      );
+
+      document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('security-alert', { 
+          detail: { message: 'Content Protected by YAMATO SECURITY' } 
+        }));
+      });
+    </script>
+  </body>
+</html>
