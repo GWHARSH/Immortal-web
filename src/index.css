@@ -2677,15 +2677,6 @@ section::before {
   .swirl-card__img-wrap {
     height: 130px;
   }
-  
-  /* Low-End 2GB RAM Mobile Optimization: Ultra-smooth 60fps performance */
-  .bento-card, .music-toggle__controls, .announcement-popup, .login-card, .hs-switcher, .sec-switcher {
-    -webkit-backdrop-filter: blur(8px) !important;
-    backdrop-filter: blur(8px) !important;
-  }
-  .bg-noise, .hs__noise {
-    display: none !important;
-  }
 }
 
 
