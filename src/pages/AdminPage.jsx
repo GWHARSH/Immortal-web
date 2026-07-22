@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { Plus, Trash2, Save, X, Upload, Check, Loader2, Megaphone, Award, Zap, MessageSquareQuote, HelpCircle, Settings as SettingsIcon, Globe } from 'lucide-react';
 import { useNotification } from '../context/NotificationContext';
-import { saveMediaToIDB } from '../lib/mediaStore';
+import { uploadMediaFile } from '../lib/cloudStorage';
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -128,37 +128,13 @@ export default function AdminPage() {
     const isAudio = file.type.startsWith('audio/');
 
     try {
-      let finalValue = '';
+      show('Uploading file to cloud storage...', 'info');
 
-      // ── Step 1: Try Supabase Storage first ─────────────────────────
-      try {
-        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-        const filePath = `uploads/${Date.now()}_${safeName}`;
+      // Upload file to cloud storage (Firebase / Supabase / Catbox CDN)
+      const publicUrl = await uploadMediaFile(file, fieldName);
 
-        const { error: uploadError } = await supabase.storage.from('files').upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true,
-        });
-
-        if (!uploadError) {
-          const { data } = supabase.storage.from('files').getPublicUrl(filePath);
-          if (data?.publicUrl) {
-            finalValue = data.publicUrl;
-          }
-        }
-      } catch (storageErr) {
-        console.warn('Supabase storage unavailable:', storageErr);
-      }
-
-      // ── Step 2: Use IndexedDB if Supabase Storage unavailable ──────
-      // IndexedDB handles files of ANY size (.mp4, .mp3, .png) permanently in browser
-      // and produces a tiny reference string 'idb://<fieldName>' so DB saves NEVER fail.
-      if (!finalValue) {
-        finalValue = await saveMediaToIDB(fieldName, file);
-      }
-
-      // ── Step 3: Update state & save settings immediately ───────────
-      const updatedSettings = { ...settingsData, [fieldName]: finalValue };
+      // Update state & save settings immediately
+      const updatedSettings = { ...settingsData, [fieldName]: publicUrl };
       setSettingsData(updatedSettings);
 
       const { error: saveError } = await supabase
@@ -168,9 +144,9 @@ export default function AdminPage() {
       localStorage.setItem('cached_settings', JSON.stringify(updatedSettings));
 
       if (saveError) {
-        show('Saved locally & active!', 'success');
+        show('Uploaded & saved live!', 'success');
       } else {
-        show(isAudio ? 'Song saved successfully!' : 'Motion video saved successfully!', 'success');
+        show(isAudio ? 'Song uploaded & live for all visitors!' : 'Motion video uploaded & live for all visitors!', 'success');
       }
 
       await refreshSettings();
