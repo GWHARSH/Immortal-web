@@ -69,26 +69,25 @@ const GITHUB_RAW_VIDEO = 'https://raw.githubusercontent.com/GWHARSH/Immortal-web
 const DEFAULT_MOTION_VIDEO = 'https://assets.mixkit.co/videos/preview/mixkit-abstract-technology-mesh-network-41559-large.mp4';
 
 function StyleApex({ socials, onSocialClick, scrollDown, heroContent, settings }) {
-  const isVideoMode = (settings?.motion_bg_type || 'video') === 'video';
   const performanceTier = useDevicePerformance();
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window);
+  const shouldRenderVideo = (settings?.motion_bg_type || 'video') === 'video' && !isMobile && performanceTier === 'high';
 
   const [videoSrc, setVideoSrc] = useState(() => {
-    const isDesktop = typeof window !== 'undefined' && window.innerWidth > 768;
     const dbUrl = settings?.motion_bg_url;
     if (dbUrl && dbUrl.startsWith('http') && !dbUrl.includes('idb://') && !dbUrl.includes('firestore_media://')) {
       return forceHttps(dbUrl);
     }
-    return isDesktop || performanceTier === 'high' ? '/bg-video.mp4' : '/bg-video-mobile.mp4';
+    return '/bg-video.mp4';
   });
   const bgOpacity = settings?.motion_bg_opacity ? Number(settings.motion_bg_opacity) : 0.72;
 
   useEffect(() => {
-    const isDesktop = typeof window !== 'undefined' && window.innerWidth > 768;
     const dbUrl = settings?.motion_bg_url;
     if (dbUrl && dbUrl.startsWith('http') && !dbUrl.includes('idb://') && !dbUrl.includes('firestore_media://')) {
       setVideoSrc(forceHttps(dbUrl));
     } else {
-      setVideoSrc(isDesktop || performanceTier === 'high' ? '/bg-video.mp4' : '/bg-video-mobile.mp4');
+      setVideoSrc('/bg-video.mp4');
     }
   }, [settings?.motion_bg_url, performanceTier]);
 
@@ -103,7 +102,7 @@ function StyleApex({ socials, onSocialClick, scrollDown, heroContent, settings }
 
   return (
     <div className="hs hs--apex">
-      {isVideoMode ? (
+      {shouldRenderVideo ? (
         <video
           key={videoSrc}
           src={videoSrc}

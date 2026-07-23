@@ -2,16 +2,19 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function CustomCursor() {
+  const isTouchOrMobile = typeof window !== 'undefined' && (
+    window.innerWidth <= 768 ||
+    window.matchMedia('(pointer: coarse)').matches ||
+    'ontouchstart' in window
+  );
+
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
   const [isHovered, setIsHovered] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Check if device supports touch only
-    if (window.matchMedia('(pointer: coarse)').matches) {
-      return;
-    }
+    if (isTouchOrMobile) return;
     setIsVisible(true);
 
     const onMouseMove = (e) => {

@@ -13,16 +13,17 @@ const DEFAULT_STATS = [
 const ICON_MAP = [Award, Eye, Download, Users, Zap, ShieldCheck];
 
 function CounterNumber({ target, suffix }) {
-  const [count, setCount] = useState(0);
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window);
+  const numTarget = Number(target) || 0;
+  const [count, setCount] = useState(isMobile ? numTarget : 0);
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const isInView = useInView(ref, { once: true, margin: '-20px' });
 
   useEffect(() => {
-    if (!isInView) return;
-    const numTarget = Number(target) || 0;
+    if (isMobile || !isInView) return;
     let start = 0;
-    const duration = 2000;
-    const stepTime = 30;
+    const duration = 1200;
+    const stepTime = 60;
     const steps = duration / stepTime;
     const increment = numTarget / steps;
 
@@ -37,11 +38,11 @@ function CounterNumber({ target, suffix }) {
     }, stepTime);
 
     return () => clearInterval(timer);
-  }, [isInView, target]);
+  }, [isInView, target, isMobile, numTarget]);
 
   return (
     <span ref={ref} className="stats-card__number">
-      {count}
+      {isMobile ? numTarget : count}
       {suffix}
     </span>
   );

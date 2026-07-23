@@ -116,10 +116,11 @@ export default function SkillsSection() {
                     <div className="skill-card__bar-track">
                       <motion.div
                         className="skill-card__bar-fill"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
+                        style={{ width: `${skill.level}%`, transformOrigin: 'left' }}
+                        initial={{ scaleX: 0 }}
+                        whileInView={{ scaleX: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
+                        transition={{ duration: 0.8, ease: 'easeOut' }}
                       />
                     </div>
                   </div>

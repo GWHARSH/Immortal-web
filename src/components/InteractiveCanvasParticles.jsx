@@ -5,6 +5,11 @@ export default function InteractiveCanvasParticles() {
   const canvasRef = useRef(null);
   const tier = useDevicePerformance();
 
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window);
+  if (tier === 'low' || isMobile) {
+    return null;
+  }
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -55,7 +60,7 @@ export default function InteractiveCanvasParticles() {
     };
 
     const handleClick = (e) => {
-      if (tier !== 'low') {
+      if (tier === 'high') {
         shockwaves.push({
           x: e.clientX,
           y: e.clientY,
@@ -72,14 +77,7 @@ export default function InteractiveCanvasParticles() {
     let dots = [];
 
     const initDots = () => {
-      let density = 85;
-      if (tier === 'low') {
-        density = Math.min(Math.floor((width * height) / 30000), 25);
-      } else if (tier === 'medium') {
-        density = Math.min(Math.floor((width * height) / 18000), 45);
-      } else {
-        density = Math.min(Math.floor((width * height) / 12000), 85);
-      }
+      let density = tier === 'high' ? Math.min(Math.floor((width * height) / 14000), 65) : 25;
       dots = [];
 
       for (let i = 0; i < density; i++) {
@@ -126,8 +124,6 @@ export default function InteractiveCanvasParticles() {
         ctx.strokeStyle = '#00F0FF';
         ctx.globalAlpha = sw.alpha;
         ctx.lineWidth = 1.5;
-        ctx.shadowBlur = 14;
-        ctx.shadowColor = '#00F0FF';
         ctx.stroke();
       }
 
@@ -148,8 +144,6 @@ export default function InteractiveCanvasParticles() {
         ctx.arc(tp.x, tp.y, tp.size, 0, Math.PI * 2);
         ctx.fillStyle = tp.color;
         ctx.globalAlpha = tp.alpha;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = tp.color;
         ctx.fill();
       }
 
@@ -163,8 +157,8 @@ export default function InteractiveCanvasParticles() {
         d.x += d.vx;
         d.y += d.vy;
 
-        const distFromOrigin = Math.hypot(d.x - d.originX, d.y - d.originY);
-        if (distFromOrigin > 70) {
+        const distFromOriginSq = (d.x - d.originX) ** 2 + (d.y - d.originY) ** 2;
+        if (distFromOriginSq > 4900) {
           d.vx += (d.originX - d.x) * 0.0004;
           d.vy += (d.originY - d.y) * 0.0004;
         }
@@ -174,61 +168,50 @@ export default function InteractiveCanvasParticles() {
 
         const dx = mouse.x - d.x;
         const dy = mouse.y - d.y;
-        const distToMouse = Math.hypot(dx, dy);
+        const distToMouseSq = dx * dx + dy * dy;
 
-        if (distToMouse < mouse.radius) {
+        if (distToMouseSq < 36100) { // 190^2
+          const distToMouse = Math.sqrt(distToMouseSq);
           const force = (mouse.radius - distToMouse) / mouse.radius;
           const angle = Math.atan2(dy, dx);
           d.x -= Math.cos(angle) * force * 2.0;
           d.y -= Math.sin(angle) * force * 2.0;
         }
 
-        shockwaves.forEach((sw) => {
-          const swDist = Math.hypot(sw.x - d.x, sw.y - d.y);
-          if (Math.abs(swDist - sw.radius) < 25) {
-            const angle = Math.atan2(d.y - sw.y, d.x - sw.x);
-            d.x += Math.cos(angle) * 5;
-            d.y += Math.sin(angle) * 5;
-          }
-        });
-
-        const isNearMouse = distToMouse < mouse.radius;
+        const isNearMouse = distToMouseSq < 36100;
         const renderRadius = isNearMouse ? currentRadius * 1.3 : currentRadius;
 
         ctx.beginPath();
         ctx.arc(d.x, d.y, Math.max(0.8, renderRadius), 0, Math.PI * 2);
         ctx.fillStyle = isNearMouse ? '#38BDF8' : d.color;
         ctx.globalAlpha = isNearMouse ? Math.min(1, d.alpha + 0.3) : d.alpha;
-        ctx.shadowBlur = isNearMouse ? 14 : 6;
-        ctx.shadowColor = d.color;
         ctx.fill();
 
         // Connect Energy Lines to Mouse
-        if (distToMouse < 150) {
+        if (distToMouseSq < 22500) { // 150^2
+          const distToMouse = Math.sqrt(distToMouseSq);
           ctx.beginPath();
           ctx.moveTo(d.x, d.y);
           ctx.lineTo(mouse.x, mouse.y);
           ctx.strokeStyle = '#00F0FF';
           ctx.globalAlpha = (1 - distToMouse / 150) * 0.35;
           ctx.lineWidth = 1.0;
-          if (width > 768) {
-            ctx.shadowBlur = 8;
-            ctx.shadowColor = '#00F0FF';
-          }
           ctx.stroke();
         }
 
         // Connect lines between neighboring dots (Constellation Net)
         for (let j = i + 1; j < dots.length; j++) {
           const d2 = dots[j];
-          const distBetween = Math.hypot(d.x - d2.x, d.y - d2.y);
+          const distSq = (d.x - d2.x) ** 2 + (d.y - d2.y) ** 2;
+          const maxDist = 135;
 
-          if (distBetween < (width <= 768 ? 95 : 135)) {
+          if (distSq < maxDist * maxDist) {
+            const distBetween = Math.sqrt(distSq);
             ctx.beginPath();
             ctx.moveTo(d.x, d.y);
             ctx.lineTo(d2.x, d2.y);
             ctx.strokeStyle = '#00F0FF';
-            ctx.globalAlpha = (1 - distBetween / (width <= 768 ? 95 : 135)) * 0.22;
+            ctx.globalAlpha = (1 - distBetween / maxDist) * 0.22;
             ctx.lineWidth = 0.8;
             ctx.stroke();
           }
@@ -246,7 +229,7 @@ export default function InteractiveCanvasParticles() {
       window.removeEventListener('click', handleClick);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [tier]);
 
   return (
     <canvas

@@ -55,6 +55,11 @@ function AppInner() {
   useGlobalScrollReveal();
 
   useEffect(() => {
+    // Only track mouse position CSS variables on desktop devices with fine pointer
+    if (window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches) {
+      return;
+    }
+
     let rafId;
     const handleMouseMove = (e) => {
       if (rafId) cancelAnimationFrame(rafId);
@@ -82,7 +87,7 @@ function AppInner() {
       <ScrollToTop />
       <Navbar />
 
-      {/* Floating background ambient dots */}
+      {/* Floating background ambient dots — hidden on mobile via CSS */}
       <div className="bg-particles">
         <div className="bg-particles__dot bg-particles__dot--1" />
         <div className="bg-particles__dot bg-particles__dot--2" />

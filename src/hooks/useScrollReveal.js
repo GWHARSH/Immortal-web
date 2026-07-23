@@ -49,7 +49,6 @@ export function useGlobalScrollReveal() {
       { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.08 }
     );
 
-    // Observe existing elements
     const observe = () => {
       document.querySelectorAll('.reveal:not(.reveal--visible)').forEach((el) => {
         observer.observe(el);
@@ -58,15 +57,14 @@ export function useGlobalScrollReveal() {
 
     observe();
 
-    // Re-observe on route changes (MutationObserver)
-    const mutObs = new MutationObserver(() => {
-      requestAnimationFrame(observe);
-    });
-    mutObs.observe(document.body, { childList: true, subtree: true });
+    // Check once after initial renders and data fetching complete
+    const timer1 = setTimeout(observe, 300);
+    const timer2 = setTimeout(observe, 1200);
 
     return () => {
       observer.disconnect();
-      mutObs.disconnect();
+      clearTimeout(timer1);
+      clearTimeout(timer2);
     };
   }, []);
 }

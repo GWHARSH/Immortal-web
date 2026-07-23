@@ -1,9 +1,13 @@
 // Setup script: creates settings doc + ensures admin user role
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, updatePassword } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import fs from 'fs';
 import path from 'path';
+
+const ADMIN_EMAIL = 'hixx@playz.com';
+const ADMIN_CURRENT_PASSWORD = 'hixx@2026';
+const ADMIN_NEW_PASSWORD = 'immortal@1';
 
 function loadEnv() {
   const envPath = path.resolve('.env');
@@ -41,13 +45,19 @@ async function setup() {
   console.log('[SETUP] Signing in as admin...');
 
   try {
-    const cred = await signInWithEmailAndPassword(auth, 'hixx@playz.com', 'hixx@2026');
+    const cred = await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_CURRENT_PASSWORD);
     const uid = cred.user.uid;
     console.log('[SETUP] ✓ Signed in — UID:', uid);
 
+    // Rotate admin password to the new credential
+    if (ADMIN_NEW_PASSWORD && ADMIN_NEW_PASSWORD !== ADMIN_CURRENT_PASSWORD) {
+      await updatePassword(cred.user, ADMIN_NEW_PASSWORD);
+      console.log('[SETUP] ✓ Admin password updated to the new secret.');
+    }
+
     // Set admin role
     await setDoc(doc(db, 'users', uid), {
-      email: 'hixx@playz.com',
+      email: ADMIN_EMAIL,
       role: 'admin',
       created_at: new Date().toISOString(),
     }, { merge: true });
@@ -76,7 +86,7 @@ async function setup() {
 
     console.log('\n══════════════════════════════════════');
     console.log('  SETUP COMPLETE!');
-    console.log('  Login: hixx@playz.com / hixx@2026');
+    console.log(`  Login: ${ADMIN_EMAIL} / ${ADMIN_NEW_PASSWORD}`);
     console.log('══════════════════════════════════════\n');
 
     setTimeout(() => process.exit(0), 1000);

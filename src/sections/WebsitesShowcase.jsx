@@ -63,7 +63,8 @@ const DEFAULT_WEBSITES = [
 
 export default function WebsitesShowcase() {
   const { settings } = useSettings();
-  const [viewMode, setViewMode] = useState('3d'); // '3d' | 'classic'
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window);
+  const [viewMode, setViewMode] = useState(() => (isMobile ? 'classic' : '3d')); // '3d' | 'classic'
   const [selectedSite, setSelectedSite] = useState(null);
   const [current, setCurrent] = useState(0);
 
@@ -92,8 +93,10 @@ export default function WebsitesShowcase() {
 
   const websites = getWebsites();
 
-  // Smooth Physics Scroll Loop for 3D Swirl
+  // Smooth Physics Scroll Loop for 3D Swirl — only run when viewMode === '3d'
   useEffect(() => {
+    if (viewMode !== '3d') return;
+
     let lastTime = performance.now();
 
     const loop = (now) => {
@@ -116,7 +119,7 @@ export default function WebsitesShowcase() {
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, []);
+  }, [viewMode]);
 
   // Attach non-passive wheel listener for smooth scroll wheel control
   useEffect(() => {
@@ -284,6 +287,7 @@ export default function WebsitesShowcase() {
                         alt={site.title}
                         className="swirl-card__img"
                         loading="lazy"
+                        decoding="async"
                       />
                       <div className="swirl-card__badge">
                         {site.category || 'Website'}

@@ -2679,5 +2679,173 @@ section::before {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE & LOW-TIER HARDWARE PERFORMANCE OPTIMIZATIONS
+   Target: MediaTek P20, Mali-T880, Cortex-A53, Low fill-rate mobile GPUs
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px), (pointer: coarse) {
+  .bg-particles {
+    display: none !important;
+  }
+
+  .bg-noise {
+    opacity: 0.02 !important;
+  }
+}
+
+body.perf-low,
+body.is-mobile,
+.perf-low,
+.is-mobile {
+  /* 1. Strip GPU fill-rate crippling backdrop-filters on mobile */
+  .bento-card,
+  .nav2__bar,
+  .nav2__mobile,
+  .section-label,
+  .btn--outline,
+  .hero__social-icon,
+  .hero-social-icon,
+  .login-card,
+  .music-toggle__controls,
+  .announcement-popup,
+  .social-modal-overlay,
+  .social-modal,
+  .card__price-badge,
+  .hs-switcher,
+  .sec-switcher,
+  .swirl-card__category {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. Fallback to clean semi-transparent dark backgrounds */
+  .bento-card,
+  .login-card {
+    background: rgba(11, 19, 41, 0.94) !important;
+    border: 1px solid rgba(56, 189, 248, 0.15) !important;
+  }
+
+  .nav2__bar {
+    background: rgba(8, 12, 22, 0.96) !important;
+  }
+
+  .nav2__mobile,
+  .announcement-popup,
+  .social-modal {
+    background: rgba(10, 14, 26, 0.98) !important;
+  }
+
+  .btn--outline,
+  .section-label {
+    background: rgba(15, 23, 42, 0.9) !important;
+  }
+
+  /* 3. Strip heavy multi-layer box shadows */
+  .bento-card,
+  .login-card,
+  .btn--primary,
+  .announcement-popup {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  /* 4. Optimize transitions and text effects */
+  .section-title:hover .text-accent {
+    filter: none !important;
+    animation: none !important;
+  }
+
+  /* 5. Force GPU compositing on scrolling blocks */
+  .reveal,
+  .hs,
+  .bento-card,
+  .navbar-container {
+    transform: translateZ(0);
+  }
+}
+
+@media (max-width: 768px) {
+  /* 1. Strip GPU fill-rate crippling backdrop-filters on mobile */
+  .bento-card,
+  .nav2__bar,
+  .nav2__mobile,
+  .section-label,
+  .btn--outline,
+  .hero__social-icon,
+  .hero-social-icon,
+  .login-card,
+  .music-toggle__controls,
+  .announcement-popup,
+  .social-modal-overlay,
+  .social-modal,
+  .card__price-badge,
+  .hs-switcher,
+  .sec-switcher,
+  .swirl-card__category {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. Fallback to clean semi-transparent dark backgrounds */
+  .bento-card,
+  .login-card {
+    background: rgba(11, 19, 41, 0.94) !important;
+    border: 1px solid rgba(56, 189, 248, 0.15) !important;
+  }
+
+  .nav2__bar {
+    background: rgba(8, 12, 22, 0.96) !important;
+  }
+
+  .nav2__mobile,
+  .announcement-popup,
+  .social-modal {
+    background: rgba(10, 14, 26, 0.98) !important;
+  }
+
+  .btn--outline,
+  .section-label {
+    background: rgba(15, 23, 42, 0.9) !important;
+  }
+
+  /* 3. Strip heavy multi-layer box shadows */
+  .bento-card,
+  .login-card,
+  .btn--primary,
+  .announcement-popup {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  /* 4. Optimize transitions and text effects */
+  .section-title:hover .text-accent {
+    filter: none !important;
+    animation: none !important;
+  }
+
+  /* 5. Force GPU compositing on scrolling blocks */
+  .reveal,
+  .hs,
+  .bento-card,
+  .navbar-container {
+    transform: translateZ(0);
+  }
+
+  /* 6. Enforce layout containment to isolate bounding box reflows */
+  .card,
+  .bento-card,
+  .skill-card,
+  .stats-card,
+  .testimonial-card {
+    contain: content;
+  }
+
+  /* 7. Pause non-essential infinite keyframe animations on mobile */
+  .section-label::before,
+  .dcard__status-dot-pulse,
+  .dcard__banner-shimmer,
+  .card__shine {
+    animation: none !important;
+  }
+}
+
 
 
